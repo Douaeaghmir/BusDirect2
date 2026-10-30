@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <title>BusDirect</title>
-        <script src="https://cdn.tailwindcss.com"></script>
+    <title>BusDirect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body>
-        <header class="flex items-center justify-between bg-white px-4 py-3 shadow-sm sm:px-6">
+    <header class="flex items-center justify-between bg-white px-4 py-3 shadow-sm sm:px-6">
         <div class="flex items-center gap-2">
             <img src="img/buslogo.png" alt="Logo BusDirect" class="h-10 w-10 object-contain">
             <h1 class="text-xl font-bold text-blue-700">BusDirect</h1>
@@ -32,18 +34,30 @@
         </div>
     </section>
     <section class="bg-white px-4 py-3 shadow-sm sm:px-6">
-        <div class="flex items-center">
-            <input class="border-2 border-black focus:border-[#03045E] focus:outline-none" type="text" placeholder="Chercher">
-            <img class="h-[30px] w-[30px]" src="img/search.svg" alt="icon search">
+        <div class="flex items-center justify-end  gap-4">
+            <div class="flex items-center">
+                <input class="border-2 border-black focus:border-[#03045E] focus:outline-none" type="text"
+                    placeholder="Chercher">
+                <img class="h-[30px] w-[30px]" src="img/search.svg" alt="icon search">
+            </div>
+            <select id="traject-status" class="border-2 border-black bg-gray-100 rounded-xl">
+                <option>Tout les traject</option>
+                <option>Occupée</option>
+                <option>libre</option>
+            </select>
         </div>
-        <select id="traject-status" class="border-2 border-white bg-white">
-            <option>Tout les traject</option>
-            <option>Occupée</option>
-            <option>libre</option>
-        </select>
     </section>
-            <footer class="bg-white p-4 text-center text-sm text-gray-500">
+    <section class="grid grid-cols-3 grid-row-2 gap-8 mx-4 my-4">
+        <div class="box-1 w-full h-26 bg-gray-100 border-2 p-6 border-gray-200 rounded-md shadow-lg"></div>
+        <div class="box-2 w-full h-26 bg-gray-100 border-2 p-6 border-gray-200 rounded-md shadow-lg"></div>
+        <div class="box-3 w-full h-26 bg-gray-100 border-2 p-6 border-gray-200 rounded-md shadow-lg"></div>
+        <div class="box-4 w-full h-26 bg-gray-100 border-2 p-6 border-gray-200 rounded-md shadow-lg"></div>
+        <div class="box-5 w-full h-26 bg-gray-100 border-2 p-6 border-gray-200 rounded-md shadow-lg"></div>
+        <div class="box-6 w-full h-26 bg-gray-100 border-2 p-6 border-gray-200 rounded-md shadow-lg"></div>
+    </section>
+    <footer class="bg-white p-4 text-center text-sm text-gray-500">
         © 2026 BusDirect
     </footer>
 </body>
+
 </html>
