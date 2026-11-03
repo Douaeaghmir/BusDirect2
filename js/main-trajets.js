@@ -1,3 +1,4 @@
+let alltraject = [];
 import { fetchData } from "./store.js";
 
 let traject ;
@@ -9,10 +10,20 @@ let LaRecettes = document.getElementById("LaRecettes");
 let NomberPassengers = document.getElementById("NombrePassagers");
 let trajectComplete = document.getElementById("TrajetsComplet");
 let ListeTraject = document.getElementById("tripcontainer");
+let matchCity = document.getElementById("searchCity");
+
+
+
 fetchData('./data/trips.json')
 .then(data => {
+    alltraject = data;
     traject.textContent = data.length;
+    matchCity.addEventListener("input", function(){
+    let getvalue = matchCity.value.toLowerCase();
+    ListeTraject.innerHTML = "";
     data.forEach(trip => {
+        if(trip.departure.toLowerCase().includes(getvalue) || trip.destination.toLowerCase().includes(getvalue))
+        {
         let placesLibre = trip.capacity - trip.reservations.length;
         let status = "Disponible";
 
@@ -39,16 +50,17 @@ fetchData('./data/trips.json')
         <p class="text-black mb-2">
          💺 ${placesLibre}places libres
          </p>
-         <p class="text-black mb-4>
+         <p class="text-black mb-4">
          👥 ${trip.waitingList.length} en attente
          </p>
-         <a href = "./cabine.html?id=${trip.id}" class="block text-center bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700">
+         <a href = "./cabine.html?id=${trip.id}" class="block text-center bg-pink-600 text-white p-2 rounded-lg hover:bg-blue-700">
          Gérer la cabine → 
          </a>
          </div>
         `;
-        
+    }
     });
+    matchCity.dispatchEvent(new Event ("input"));
     for(let i = 0 ; i < data.length ; i++)
     {
         counter += data[i].reservations.length;
@@ -60,7 +72,8 @@ fetchData('./data/trips.json')
     }
     console.log(counter);
     NomberPassengers.textContent = counter;
-    LaRecettes.textContent = recette + "DH";
+    LaRecettes.textContent = recette + " DH";
     trajectComplete.textContent = TrajetsComplets;
+})
 })
 
