@@ -11,6 +11,7 @@ let NomberPassengers = document.getElementById("NombrePassagers");
 let trajectComplete = document.getElementById("TrajetsComplet");
 let ListeTraject = document.getElementById("tripcontainer");
 let matchCity = document.getElementById("searchCity");
+let filterTraject = document.getElementById("traject-status");
 
 
 
@@ -22,9 +23,9 @@ fetchData('./data/trips.json')
     let getvalue = matchCity.value.toLowerCase().trim();
     ListeTraject.innerHTML = "";
     data.forEach(trip => {
-        if(trip.departure.toLowerCase().includes(getvalue) || trip.destination.toLowerCase().includes(getvalue))
-        {
         let placesLibre = trip.capacity - trip.reservations.length;
+        if((trip.departure.toLowerCase().includes(getvalue) || trip.destination.toLowerCase().includes(getvalue)) && ((filterTraject.value === "touTraject" || (filterTraject.value === "Occupée" && placesLibre === 0) || (filterTraject.value === "libre" && placesLibre > 0))))
+        {
         let status = "Disponible";
 
         if(placesLibre === 0)
@@ -60,6 +61,9 @@ fetchData('./data/trips.json')
         `;
     }
     });
+    })
+        filterTraject.addEventListener("change" ,function(){
+        matchCity.dispatchEvent(new Event("input"));
 })
     matchCity.dispatchEvent(new Event ("input"));
      for(let i = 0 ; i < data.length ; i++)
