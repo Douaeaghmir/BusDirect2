@@ -19,7 +19,7 @@ fetchData('./data/trips.json')
     alltraject = data;
     traject.textContent = data.length;
     matchCity.addEventListener("input", function(){
-    let getvalue = matchCity.value.toLowerCase();
+    let getvalue = matchCity.value.toLowerCase().trim();
     ListeTraject.innerHTML = "";
     data.forEach(trip => {
         if(trip.departure.toLowerCase().includes(getvalue) || trip.destination.toLowerCase().includes(getvalue))
@@ -53,15 +53,16 @@ fetchData('./data/trips.json')
          <p class="text-black mb-4">
          👥 ${trip.waitingList.length} en attente
          </p>
-         <a href = "./cabine.html?id=${trip.id}" class="block text-center bg-pink-600 text-white p-2 rounded-lg hover:bg-blue-700">
+         <a href = "./cabine.html?id=${trip.id}" class="block text-center bg-[#03045E] text-white p-2 rounded-lg hover:bg-blue-700">
          Gérer la cabine → 
          </a>
          </div>
         `;
     }
     });
+})
     matchCity.dispatchEvent(new Event ("input"));
-    for(let i = 0 ; i < data.length ; i++)
+     for(let i = 0 ; i < data.length ; i++)
     {
         counter += data[i].reservations.length;
         recette += data[i].price * data[i].reservations.length;
@@ -74,6 +75,5 @@ fetchData('./data/trips.json')
     NomberPassengers.textContent = counter;
     LaRecettes.textContent = recette + " DH";
     trajectComplete.textContent = TrajetsComplets;
-})
 })
 
