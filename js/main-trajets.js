@@ -102,7 +102,7 @@ fetchData('./data/trips.json')
     {
         counter += data[i].reservations.length;
         recette += data[i].price * data[i].reservations.length;
-        if(data[i].capacity === 20)
+        if(data[i].reservations.length === data[i].capacity)
         {
             TrajetsComplets++;
         }
