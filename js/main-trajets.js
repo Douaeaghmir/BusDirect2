@@ -5,6 +5,8 @@ let traject ;
 let counter = 0;
 let recette = 0;
 let TrajetsComplets = 0;
+let currentPage = 1;
+let size = 6;
 traject = document.getElementById("trajets");
 let LaRecettes = document.getElementById("LaRecettes");
 let NomberPassengers = document.getElementById("NombrePassagers");
@@ -12,7 +14,7 @@ let trajectComplete = document.getElementById("TrajetsComplet");
 let ListeTraject = document.getElementById("tripcontainer");
 let matchCity = document.getElementById("searchCity");
 let filterTraject = document.getElementById("traject-status");
-
+let pagination = document.getElementById("pagination");
 
 
 fetchData('./data/trips.json')
@@ -20,12 +22,42 @@ fetchData('./data/trips.json')
     alltraject = data;
     traject.textContent = data.length;
     matchCity.addEventListener("input", function(){
-    let getvalue = matchCity.value.toLowerCase().trim();
-    ListeTraject.innerHTML = "";
-    data.forEach(trip => {
-        let placesLibre = trip.capacity - trip.reservations.length;
-        if((trip.departure.toLowerCase().includes(getvalue) || trip.destination.toLowerCase().includes(getvalue)) && ((filterTraject.value === "touTraject" || (filterTraject.value === "Occupée" && placesLibre === 0) || (filterTraject.value === "libre" && placesLibre > 0))))
+        let getvalue = matchCity.value.toLowerCase().trim();
+        let filteredTraject = alltraject.filter(trip => {
+            let placesLibre = trip.capacity - trip.reservations.length;
+            
+            return (
+                (trip.departure.toLowerCase().includes(getvalue) ||
+                trip.destination.toLowerCase().includes(getvalue))
+                &&
+                (
+                    filterTraject.value === "touTraject" ||
+                    (filterTraject.value === "Occupée" && placesLibre === 0) ||
+                    (filterTraject.value === "libre" && placesLibre > 0)
+                )
+            );
+        });
+        let start = (currentPage - 1) * size;
+        let end = start + size;
+        
+        let cartsToDisplay = filteredTraject.slice(start , end);
+        let totalPages = Math.ceil(filteredTraject.length / size);
+        pagination.innerHTML = "";
+        for(let i = 1; i <= totalPages ; i++)
         {
+            pagination.innerHTML += `<button data-page="${i}" class="bg-[#03045E] text-white font-bold text-2xl px-4 py-2 rounded-lg">${i}</button>`;
+        }
+        pagination.querySelectorAll("button").forEach(button =>{
+            button.addEventListener("click", function(){
+                currentPage = Number(button.dataset.page);
+
+                matchCity.dispatchEvent(new Event("input"));
+            })
+        })
+    ListeTraject.innerHTML = "";
+    cartsToDisplay.forEach(trip => {
+        {
+            let placesLibre = trip.capacity - trip.reservations.length;
         let status = "Disponible";
 
         if(placesLibre === 0)
@@ -43,9 +75,9 @@ fetchData('./data/trips.json')
         </div>
         </div>
         <p class="text-gray-600 mb-2">
-        🕒 ${trip.departureTime}→${trip.arrivalTime}
+        🕒 ${trip.departureTime}→${trip.arrivalTime} 
         </p>
-        <p class="text-black mb-2">
+        <p class="text-black mb-2"> 
         💰 ${trip.price} DH
         </p>
         <p class="text-black mb-2">
@@ -75,9 +107,7 @@ fetchData('./data/trips.json')
             TrajetsComplets++;
         }
     }
-    console.log(counter);
     NomberPassengers.textContent = counter;
     LaRecettes.textContent = recette + " DH";
     trajectComplete.textContent = TrajetsComplets;
 })
-
