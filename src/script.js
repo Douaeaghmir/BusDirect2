@@ -13,7 +13,30 @@ fetchData("../data/trips.json").then(data => {
     const trip = data.find(function(Element){
         return Element.id == getId;
     })
-    console.log(trip);
+    if(trip)
+        {
+            for(let i = 0; i < trip.reservations.length ; i++)
+            {
+                let reservseat = trip.reservations[i].seat;
+                for(let j = 0 ; j < seats.length ; j++)
+                {
+                    if(Number(seats[j].textContent.trim()) === reservseat)
+                    {
+                        seats[j].disabled = true;
+                        seats[j].classList.remove(
+                        "bg-white",
+                        "hover:bg-gray-100",
+                        "border-gray-300"
+                    );
+                    seats[j].classList.add(
+                    "bg-red-100",
+                    "border-red-200",
+                    "text-red-600"
+                    );
+                    }
+                }
+            }
+    }
 })
 let dispo = 17;
 let recette = 240;
