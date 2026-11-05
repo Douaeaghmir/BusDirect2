@@ -1,16 +1,25 @@
+import {fetchData} from "../js/store.js";
+
 const nameInput = document.getElementById("nom");
 const seatSelect = document.getElementById("place")
 const reservationForm = document.getElementById("reservationForm");
 const seats = document.getElementsByClassName("seat");
 const recettelement = document.getElementById("recette");
 const dispoelement = document.getElementById("dispo");
+const param = new URLSearchParams(window.location.search);
+const getId = param.get("id");
 
+fetchData("../data/trips.json").then(data => {
+    const trip = data.find(function(Element){
+        return Element.id == getId;
+    })
+    console.log(trip);
+})
 let dispo = 17;
 let recette = 240;
 
 
 let prix = 80;
-const all = {};
 let reservations = JSON.parse(localStorage.getItem("reservations")) || [];
 function reserves() {
     reservationForm.addEventListener("submit", function (event) {
@@ -186,4 +195,3 @@ function suppression() {
     });
 }
 suppression()
-console.log(seats);
