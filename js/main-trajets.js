@@ -1,5 +1,5 @@
 let alltraject = [];
-import { fetchData } from "./store.js";
+import { fetchData , savereserve} from "./store.js";
 
 let traject ;
 let counter = 0;
@@ -20,6 +20,7 @@ let pagination = document.getElementById("pagination");
 fetchData('./data/trips.json')
 .then(data => {
     alltraject = data;
+    savereserve(alltraject);
     traject.textContent = data.length;
     matchCity.addEventListener("input", function(){
         let getvalue = matchCity.value.toLowerCase().trim();
@@ -42,6 +43,14 @@ fetchData('./data/trips.json')
         
         let cartsToDisplay = filteredTraject.slice(start , end);
         let totalPages = Math.ceil(filteredTraject.length / size);
+        if(filteredTraject.length === 0)
+        {
+            ListeTraject.innerHTML = `<div class="text-center col-span-full p-5 border-2 rounded border-pink-600 bg-pink-200 ml-[250px] mr-[250px]">
+            <p class="text-center">aucun trajet trouvé</p>
+            </div>`
+            pagination.innerHTML ="";
+            return
+        }
         pagination.innerHTML = "";
         for(let i = 1; i <= totalPages ; i++)
         {
