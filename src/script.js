@@ -1,4 +1,4 @@
-import {fetchData} from "../js/store.js";
+import { fetchData } from "../js/store.js";
 
 const nameInput = document.getElementById("nom");
 const seatSelect = document.getElementById("place")
@@ -6,45 +6,52 @@ const reservationForm = document.getElementById("reservationForm");
 const seats = document.getElementsByClassName("seat");
 const recettelement = document.getElementById("recette");
 const dispoelement = document.getElementById("dispo");
+
 const param = new URLSearchParams(window.location.search);
 const getId = param.get("id");
+let allreserves = [];
+let reserves = [];
+let trip;
+let dispo = 0;
+let recette = 0;
 
 fetchData("../data/trips.json").then(data => {
-    const trip = data.find(function(Element){
+
+    allreserves = data;
+    trip = data.find(function (Element) {
         return Element.id == getId;
     })
-    if(trip)
-        {
-            for(let i = 0; i < trip.reservations.length ; i++)
-            {
-                let reservseat = trip.reservations[i].seat;
-                for(let j = 0 ; j < seats.length ; j++)
-                {
-                    if(Number(seats[j].textContent.trim()) === reservseat)
-                    {
-                        seats[j].disabled = true;
-                        seats[j].classList.remove(
+    if (trip) {
+        reserves = trip.reservations;
+        dispo = trip.capacity - reserves.length
+
+        for (let i = 0; i < reserves.length; i++) {
+            recette += reserves[i].price || trip.price;
+        }
+
+        dispoelement.textContent = dispo;
+        recettelement.textContent = recette + " DH";
+        for (let i = 0; i < trip.reservations.length; i++) {
+            let reservseat = trip.reservations[i].seat;
+            for (let j = 0; j < seats.length; j++) {
+                if (Number(seats[j].textContent.trim()) === reservseat) {
+                    seats[j].disabled = true;
+                    seats[j].classList.remove(
                         "bg-white",
                         "hover:bg-gray-100",
                         "border-gray-300"
                     );
                     seats[j].classList.add(
-                    "bg-red-100",
-                    "border-red-200",
-                    "text-red-600"
+                        "bg-red-100",
+                        "border-red-200",
+                        "text-red-600"
                     );
-                    }
                 }
             }
+        }
     }
 })
-let dispo = 17;
-let recette = 240;
-
-
-let prix = 80;
-let reservations = JSON.parse(localStorage.getItem("reservations")) || [];
-function reserves() {
+function ajoutereserves() {
     reservationForm.addEventListener("submit", function (event) {
         event.preventDefault();
         const passengerName = nameInput.value.trim();
@@ -53,14 +60,12 @@ function reserves() {
             alert("Veuillez saisir votre nom et choisir une place.");
             return;
         }
-            for (let i = 0; i < reservations.length; i++) 
-            {
-                if (reservations[i].name.toLowerCase() === passengerName.toLowerCase()) 
-                {
-                    alert("Ce nom possède déjà une réservation !");
-                    return;
-                }
+        for (let i = 0; i < reserves.length; i++) {
+            if (reserves[i].name.toLowerCase() === passengerName.toLowerCase()) {
+                alert("Ce nom possède déjà une réservation !");
+                return;
             }
+        }
         for (let i = 0; i < seats.length; i++) {
             if (seats[i].textContent.trim() === selectedSeat) {
                 if (seats[i].disabled) {
@@ -78,16 +83,21 @@ function reserves() {
                     "border-red-200",
                     "text-red-600"
                 );
-                dispo -= 1;
+                let finalPrice = trip.price;
+                if (seats[i].classList.contains("VIP")) {
+                    finalPrice = trip.price * 1.1;
+                }
+                dispo--;
                 dispoelement.textContent = dispo;
-                recette = recette + prix;
-                recettelement.textContent = recette;
+                recette += finalPrice;
+                recettelement.textContent = recette + " DH";
                 seats[i].disabled = true;
-                reservations.push({
+                reserves.push({
                     name: passengerName,
-                    seat: selectedSeat
+                    seat: selectedSeat,
+                    price: finalPrice
                 });
-                savereserve();
+                savereserve(allreserves);
                 alert("Réservation effectuée pour " + passengerName);
                 reservationForm.reset();
                 return;
@@ -96,9 +106,9 @@ function reserves() {
         console.log(seatSelect.value);
     });
 }
-reserves()
+ajoutereserves()
 function savereserve() {
-    localStorage.setItem("reservations", JSON.stringify(reservations));
+    localStorage.setItem("trips", JSON.stringify(allreserves));
 }
 const currentplace = document.getElementById("ancienne-place");
 const modiform = document.getElementById("Modifierform");
@@ -157,9 +167,20 @@ function changer() {
             "text-red-600"
         );
         change.disabled = true;
-        for (let i = 0; i < reservations.length; i++) {
-            if (reservations[i].seat == chosingseat) {
-                reservations[i].seat = modiplace;
+        for (let i = 0; i < reserves.length; i++) 
+        {
+            if (reserves[i].seat == chosingseat) 
+            {
+                let newprice = trip.price;
+                if(change.classList.contains("VIP"))
+                {
+                    newprice = trip.price * 1.1;
+                }
+                recette -= reserves[i].price;
+                recette += newprice;
+                reserves[i].seat = Number(modiplace);
+                reserves[i].price = newprice;
+                recettelement.textContent = recette + " DH"
                 break
             }
         }
@@ -203,13 +224,14 @@ function suppression() {
             "hover:bg-gray-100",
             "border-gray-300"
         );
-        dispo += 1;
-        dispoelement.textContent = dispo;
-        recette = recette - prix;
-        recettelement.textContent = recette;
-        for (let i = 0; i < reservations.length; i++) {
-            if (reservations[i].seat == place) {
-                reservations.splice(i, 1);
+        for (let i = 0; i < reserves.length; i++) 
+        {
+            if (reserves[i].seat == place) {
+                recette -= reserves[i].price || trip.price;
+                reserves.splice(i, 1);
+                dispo++;
+                recettelement.textContent = recette + " DH";
+                dispoelement.textContent = dispo;
                 break;
             }
         }

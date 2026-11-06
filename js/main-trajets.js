@@ -1,12 +1,11 @@
-let alltraject = [];
 import { fetchData , savereserve} from "./store.js";
-
 let traject ;
 let counter = 0;
 let recette = 0;
 let TrajetsComplets = 0;
 let currentPage = 1;
 let size = 6;
+let alltraject = [];
 traject = document.getElementById("trajets");
 let LaRecettes = document.getElementById("LaRecettes");
 let NomberPassengers = document.getElementById("NombrePassagers");
@@ -15,7 +14,7 @@ let ListeTraject = document.getElementById("tripcontainer");
 let matchCity = document.getElementById("searchCity");
 let filterTraject = document.getElementById("traject-status");
 let pagination = document.getElementById("pagination");
-
+let price = document.getElementsByClassName("seat");
 
 fetchData('./data/trips.json')
 .then(data => {
@@ -110,7 +109,11 @@ fetchData('./data/trips.json')
      for(let i = 0 ; i < data.length ; i++)
     {
         counter += data[i].reservations.length;
-        recette += data[i].price * data[i].reservations.length;
+        for(let j = 0; j< data[i].reservations.length ; j++)
+        {
+
+            recette += data[i].price * data[i].reservations.length;
+        }
         if(data[i].reservations.length === data[i].capacity)
         {
             TrajetsComplets++;
