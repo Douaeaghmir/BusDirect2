@@ -19,7 +19,6 @@ let price = document.getElementsByClassName("seat");
 fetchData('./data/trips.json')
 .then(data => {
     alltraject = data;
-    savereserve(alltraject);
     traject.textContent = data.length;
     matchCity.addEventListener("input", function(){
         let getvalue = matchCity.value.toLowerCase().trim();

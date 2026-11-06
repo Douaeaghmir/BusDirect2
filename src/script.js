@@ -23,6 +23,9 @@ fetchData("../data/trips.json").then(data => {
     })
     if (trip) {
         reserves = trip.reservations;
+        if (!trip.waitingList) {
+            trip.waitingList = [];
+        }
         dispo = trip.capacity - reserves.length
 
         for (let i = 0; i < reserves.length; i++) {
@@ -32,7 +35,7 @@ fetchData("../data/trips.json").then(data => {
         dispoelement.textContent = dispo;
         recettelement.textContent = recette + " DH";
         for (let i = 0; i < trip.reservations.length; i++) {
-            let reservseat = trip.reservations[i].seat;
+            let reservseat = Number(trip.reservations[i].seat);
             for (let j = 0; j < seats.length; j++) {
                 if (Number(seats[j].textContent.trim()) === reservseat) {
                     seats[j].disabled = true;
@@ -49,6 +52,7 @@ fetchData("../data/trips.json").then(data => {
                 }
             }
         }
+        Listedattend();
     }
 })
 function ajoutereserves() {
@@ -56,8 +60,26 @@ function ajoutereserves() {
         event.preventDefault();
         const passengerName = nameInput.value.trim();
         const selectedSeat = seatSelect.value;
-        if (passengerName === "" || selectedSeat === "") {
-            alert("Veuillez saisir votre nom et choisir une place.");
+        if (passengerName === "") {
+            alert("Veuillez saisir votre nom.");
+            return;
+        }
+
+        if (dispo === 0) {
+            trip.waitingList.push({
+                name: passengerName
+            });
+
+            savereserve();
+
+            alert("Le bus est complet. Vous êtes ajouté à la liste d'attente.");
+
+            reservationForm.reset();
+            return;
+        }
+
+        if (selectedSeat === "") {
+            alert("Veuillez choisir une place.");
             return;
         }
         for (let i = 0; i < reserves.length; i++) {
@@ -107,6 +129,51 @@ function ajoutereserves() {
     });
 }
 ajoutereserves()
+
+function Listedattend() {
+    if (trip.waitingList.length === 0) {
+        return;
+    }
+    let placeLibre = null;
+    for (let i = 0; i < seats.length; i++) {
+
+        if (
+            seats[i].disabled === false &&
+            !seats[i].classList.contains("VIP")
+        ) {
+            placeLibre = seats[i];
+            break;
+        }
+    }
+
+    if (placeLibre === null) {
+        return;
+    }
+    let passenger = trip.waitingList.shift();
+
+    placeLibre.disabled = true;
+    placeLibre.classList.remove(
+        "bg-white",
+        "hover:bg-gray-100",
+        "border-gray-300"
+    );
+
+    placeLibre.classList.add(
+        "bg-red-100",
+        "border-red-200",
+        "text-red-600"
+    );
+    reserves.push({
+        name: passenger.name,
+        seat: Number(placeLibre.textContent.trim()),
+        price: trip.price
+    })
+    dispo--;
+    recette += trip.price;
+    dispoelement.textContent = dispo;
+    recettelement.textContent = recette + " DH";
+    savereserve();
+}
 function savereserve() {
     localStorage.setItem("trips", JSON.stringify(allreserves));
 }
@@ -167,13 +234,11 @@ function changer() {
             "text-red-600"
         );
         change.disabled = true;
-        for (let i = 0; i < reserves.length; i++) 
-        {
-            if (reserves[i].seat == chosingseat) 
-            {
+        dispoelement.textContent = dispo;
+        for (let i = 0; i < reserves.length; i++) {
+            if (reserves[i].seat == chosingseat) {
                 let newprice = trip.price;
-                if(change.classList.contains("VIP"))
-                {
+                if (change.classList.contains("VIP")) {
                     newprice = trip.price * 1.1;
                 }
                 recette -= reserves[i].price;
@@ -224,8 +289,7 @@ function suppression() {
             "hover:bg-gray-100",
             "border-gray-300"
         );
-        for (let i = 0; i < reserves.length; i++) 
-        {
+        for (let i = 0; i < reserves.length; i++) {
             if (reserves[i].seat == place) {
                 recette -= reserves[i].price || trip.price;
                 reserves.splice(i, 1);
@@ -236,6 +300,7 @@ function suppression() {
             }
         }
         savereserve();
+        Listedattend();
         alert("Votre place a été supprimée avec succès");
     });
 }
