@@ -312,3 +312,57 @@ function suppression() {
     });
 }
 suppression()
+let draggedSeat = null;
+
+for (let i = 0; i < seats.length; i++) {
+    seats[i].addEventListener("dragstart", function () {
+        if (seats[i].disabled === true) {
+            draggedSeat = seats[i];
+            console.log("Dragging seat:", draggedSeat.textContent.trim());
+        }
+    });
+}
+for (let i = 0; i < seats.length; i++) {
+    seats[i].addEventListener("dragover", function (event) {
+        if (seats[i].disabled === false) {
+            event.preventDefault();
+        }
+    });
+}
+for (let i = 0; i < seats.length; i++) {
+    seats[i].addEventListener("drop", function (event) {
+        event.preventDefault();
+
+        if (draggedSeat !== null && seats[i].disabled === false) {
+
+            draggedSeat.disabled = false;
+            seats[i].disabled = true;
+
+            draggedSeat.classList.remove(
+                "bg-red-100",
+                "border-red-200",
+                "text-red-600"
+            );
+
+            draggedSeat.classList.add(
+                "bg-white",
+                "hover:bg-gray-100",
+                "border-gray-300"
+            );
+
+            seats[i].classList.remove(
+                "bg-white",
+                "hover:bg-gray-100",
+                "border-gray-300"
+            );
+
+            seats[i].classList.add(
+                "bg-red-100",
+                "border-red-200",
+                "text-red-600"
+            );
+
+            draggedSeat = null;
+        }
+    });
+}
