@@ -6,6 +6,7 @@ const reservationForm = document.getElementById("reservationForm");
 const seats = document.getElementsByClassName("seat");
 const recettelement = document.getElementById("recette");
 const dispoelement = document.getElementById("dispo");
+const phoneInput = document.getElementById("telephone");
 
 const param = new URLSearchParams(window.location.search);
 const getId = param.get("id");
@@ -60,6 +61,12 @@ function ajoutereserves() {
         event.preventDefault();
         const passengerName = nameInput.value.trim();
         const selectedSeat = seatSelect.value;
+        const phone = phoneInput.value.trim();
+        const phoneregex = /^0[67][0-9]{8}$/;
+        if (!phoneregex.test(phone)) {
+            alert("Numéro de téléphone invalide !");
+            return;
+        }
         if (passengerName === "") {
             alert("Veuillez saisir votre nom.");
             return;
